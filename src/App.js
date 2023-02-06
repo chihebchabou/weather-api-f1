@@ -1,23 +1,48 @@
-import logo from './logo.svg';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import './App.css';
+import Search from './components/weather/Search';
+import Weather from './components/weather/Weather';
 
 function App() {
+  const [response, setResponse] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const searchWeather = query => {
+    setLoading(true);
+    axios
+      .get(
+        `https://api.weatherapi.com/v1/forecast.json?key=${process.env.REACT_APP_WEATHER_KEY}&q=${query}&days=3&aqi=no&alerts=no`
+      )
+      .then(res => {
+        //console.log(res.data);
+        setResponse(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        //console.log("err:", err.message);
+        setError(err.message);
+        setLoading(false);
+      });
+  };
+
+  // useEffect(() => {
+  //   searchWeather();
+  // }, []);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Search searchWeather={searchWeather} />
+      {loading ? (
+        <div> Loading... </div>
+      ) : (
+        response && <Weather response={response} />
+      )}
     </div>
   );
 }
