@@ -1,14 +1,17 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { searchWeather } from '../../redux/actions/weatherActions';
 
-const Search = ({ searchWeather }) => {
+const Search = () => {
   const [text, setText] = useState('');
+  const dispatch = useDispatch();
 
   const onFormSubmitted = e => {
     e.preventDefault();
     if (!text) {
       alert('Please enter your location');
     } else {
-      searchWeather(text);
+      dispatch(searchWeather(text));
       setText('');
     }
   };
